@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+
+<style>
+p.a {
+  white-space: pre;
+  color: black;
+}
+</style>
+
+<body style="background-color:#c1f7f6;">
+
+<canvas id="myCanvas" onload = 'move();' onclick = "clickfunc()" width="1600" height="800" style=" padding-left: 0;
+	
+    margin-left: auto;
+    margin-right: auto;
+	margin-top: 0px;
+    display: block;border:2px solid black;">
+</canvas>
+
+</body>
+
+
+<script>
+var canvas = document.getElementById("myCanvas");
+var ctx = canvas.getContext("2d");
+ctx.font = "16px Arial";
+
+var wscreen = window.innerWidth;
+var hscreen = window.innerHeight;
+
+var initialw = wscreen; 
+var initialh = hscreen; 
+
+canvas.width = wscreen
+canvas.height = canvas.width/2;
+
+//Scaling
+while (canvas.height > initialh-90){
+	canvas.height-=1; 
+	canvas.width-=2;
+}
+
+//Correct for small width
+while (wscreen - canvas.width < 30){
+	canvas.height-=1; 
+	canvas.width-=2;
+}
+
+
+ctx.scale(canvas.width/800,canvas.height/400);
+
+window.onresize = function(event) {
+	wscreen = window.innerWidth;
+	hscreen = window.innerHeight;
+
+	initialw = wscreen; 
+	initialh = hscreen; 
+
+canvas.width = wscreen
+canvas.height = canvas.width/2;
+
+//Scaling
+while (canvas.height > initialh-90){
+	canvas.height-=1; 
+	canvas.width-=2;
+}
+
+//Correct for small width
+while (wscreen - canvas.width < 30){
+	canvas.height-=1; 
+	canvas.width-=2;
+}
+
+ctx.scale(canvas.width/800,canvas.height/400);
+}
+var canvasX = 0; 
+var canvasY = 0; 
+canvas.addEventListener("mousemove", function(e) { 
+    var cRect = canvas.getBoundingClientRect();              // Gets the CSS positions along with width/height
+    canvasX = e.clientX - cRect.left;			// Subtract the 'left' of the canvas from the X/Y
+    canvasY = e.clientY - cRect.top;         	// positions to get make (0,0) the top left of the
+	canvasX=Math.round(canvasX/(canvas.width/800));
+	canvasY=Math.round(canvasY/(canvas.height/400));
+});
+
+//Defaults------------------------------
+//var fps = 60;
+//var rrate = Math.round(1000/fps);
+//var myVar = setInterval(move,rrate);
+//var myVar2 = setInterval(outprint,100); 
+//var guion = 1; 
+
+var scene = "main"; var focus = "main";
+var state = 0; var stateM = 0; var stateDelay = 0; var stateTimer = 0;
+ 
+var printout = ""; 
+var fade = 0; var sendScene = "";  var fadeTimer = 0; var fadeState = 0;  var changeFrame = 10; var maxFrame = 14; fadeImage = new Image(100, 200);
+var errormsgshow = 0; var errorTimer = 0; var errormsg = ""; var errortextsize = 30; var errorLast = 40; errorImage = new Image(100, 200);
+
+var nodown = 0;
+function clickfunc(){
+
+nodown = 0;
+}//End clickfunc
+
+//var block = function(x,y,w,h) {
+//block.prototype.draw = function() {
+//blockA.push(new block(10,10,10,10));
+//for(var i = 0; i < blockA.length ; i++) {blockA[i].draw();}
+
+var px=10;
+
+var globalID;
+
+function repeatOften() {
+	ctx.fillStyle = "white";
+ctx.fillRect(0,0,800,400);
+
+ctx.fillStyle = "red";
+ctx.fillRect(px,10,10,10);
+px+=3;
+  globalID = requestAnimationFrame(repeatOften);
+}
+
+globalID = requestAnimationFrame(repeatOften);
+
+
+
+function copytoclipboard(text) {const elem = document.createElement('textarea');elem.value = text;document.body.appendChild(elem);elem.select();document.execCommand('copy');document.body.removeChild(elem);}
+
+function randInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+getD=function(x1,y1,x2,y2){ 
+  if(!x2) x2=0; 
+  if(!y2) y2=0;
+  return Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1)); 
+}
+var customFloor = function(value, roundTo) {
+    return Math.floor(value / roundTo) * roundTo;
+}
+var customCeil = function(value, roundTo) {
+    return Math.ceil(value / roundTo) * roundTo;
+}
+function shuffle(array) {
+  let currentIndex = array.length,  randomIndex;
+
+  // While there remain elements to shuffle.
+  while (currentIndex != 0) {
+
+    // Pick a remaining element.
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+
+  return array;
+}
+function bishuffle(array,array2) {
+  let currentIndex = array.length,  randomIndex;
+
+  // While there remain elements to shuffle.
+  while (currentIndex != 0) {
+
+    // Pick a remaining element.
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+	  
+	[array2[currentIndex], array2[randomIndex]] = [
+      array2[randomIndex], array2[currentIndex]];
+  }
+
+  return array;
+  return array2;
+}
+function ditract(srcArray,array,array2){
+	for (let i = 0; i < srcArray.length; i+=2){
+		array.push(srcArray[i]);
+		array2.push(srcArray[i+1]);
+	}
+	return array;
+	return array2;
+}
+
+
+var ogtext = "";
+function splitWord(text,part){
+	if (part == 0){
+		ogtext = text;
+		text = text.substring(0, text.indexOf(' '));
+		if (text != ""){return text;}
+		else{return ogtext;}
+	}
+	if (part == 1){
+		text = text.substring(text.indexOf(' ') + 1);
+		return text;
+	}
+}
+
+function wrapText(text, x, y, maxWidth, lineHeight,stroke) {
+	var words = text.split(' ');var line = '';
+	//ctx.strokeStyle = "white"; ctx.lineWidth = 3;
+	for(var n = 0; n < words.length; n++) {
+		var testLine = line + words[n] + ' ';var metrics = ctx.measureText(testLine);var testWidth = metrics.width;
+		if (testWidth > maxWidth && n > 0) {
+			if (stroke == "ON"){ctx.strokeText(line, x, y);}
+			ctx.fillText(line, x, y);
+			line = words[n] + ' ';y += lineHeight;
+		}
+		else {line = testLine;}} if (stroke == "ON"){ctx.strokeText(line, x, y);} ctx.fillText(line, x, y);
+}
+
+window.addEventListener("keydown", checkKeyPressed, false);var sptArray = []; var sptArray2 = []; var difArray = [];var guiA = [];var sptout = "";var triggerclear = 0;var guifontsize = 20;
+window.addEventListener("keyup", checkKeyReleased, false);
+window.onkeydown = function(e) {
+    var elem = e.target.nodename;
+    if( elem !== 'TEXTAREA' && elem != 'INPUT' ) {
+        return !(e.keyCode == 32);
+    }
+};
+
+var arrayInsert = "Array";
+function checkKeyPressed(evt) {
+	if (guion == 1){
+		if (evt.keyCode == "87"){guiA.push("W");} if (evt.keyCode == "66"){guiA.push("B");}
+		
+		if (evt.keyCode == "67"){guiA = []; sptArray = []; sptArray2 = [];}
+		
+		if (evt.keyCode == "65"){guiA.push("A");} if (evt.keyCode == "86"){guiA.push("V");}if (evt.keyCode == "68"){guiA.push("D");}if (evt.keyCode == "88"){guiA.push("X");}if (evt.keyCode == "89"){guiA.push("Y");}if (evt.keyCode == "84"){guiA.push("T");}if (evt.keyCode == "73"){guiA.push("I");}if (evt.keyCode == "83"){guiA.push("S");}if (evt.keyCode == "49"){guiA.push("1");}if (evt.keyCode == "50"){guiA.push("2");}if (evt.keyCode == "51"){guiA.push("3");}if (evt.keyCode == "38"){guifontsize+=1;}if (evt.keyCode == "40"){guifontsize-=1;}
+		if (guiA[0] == "S"){sptout = "";if (guiA[1] == "1"){for (var i = 1; i < 26; i++){if (i < 10){sptout += '<img style="display:none; visibility:hidden;" src="anim/placeholder/000' + String(i) + '.png" >';}else {sptout += '<img style="display:none; visibility:hidden;" src="anim/placeholder/00' + String(i) + '.png" >';}}triggerclear = 1; copytoclipboard(sptout);}if (guiA[1] == "2"){for (var i = 1; i < 51; i++){if (i < 10){sptout += '<img style="display:none; visibility:hidden;" src="anim/placeholder/000' + String(i) + '.png" >';}else {sptout += '<img style="display:none; visibility:hidden;" src="anim/placeholder/00' + String(i) + '.png" >';}}triggerclear = 1; copytoclipboard(sptout);}if (guiA[1] == "3"){for (var i = 1; i < 100; i++){if (i < 10){sptout += '<img style="display:none; visibility:hidden;" src="anim/placeholder/000' + String(i) + '.png" >';}else {sptout += '<img style="display:none; visibility:hidden;" src="anim/placeholder/00' + String(i) + '.png" >';}}triggerclear = 1; copytoclipboard(sptout);}}
+		if (guiA[0] == "I"){
+			sptArray.push(canvasX);sptArray.push(canvasY);
+			if (guiA[1] == "I"){
+				sptArray.push(canvasX);sptArray.push(canvasY);
+				triggerclear = 1;sptout = 'ctx.drawImage(Image,' + String(sptArray[0]) + ',' + String(sptArray[1]) + '+' + String(stateM) + '-state,' + String(Math.round(sptArray[2] - sptArray[0])) + ',' + String(Math.round(sptArray[3] - sptArray[1])) + ');';copytoclipboard(sptout);
+				if (guiA[2] == "S"){sptout = 'Image.src = ".png";'; sptout+='\n\t\tctx.drawImage(Image,' + String(sptArray[0]) + ',' + String(sptArray[1]) + '+' + String(stateM) + '-state,' + String(Math.round(sptArray[2] - sptArray[0])) + ',' + String(Math.round(sptArray[3] - sptArray[1])) + ');'; copytoclipboard(sptout);}
+			}
+		}
+		
+		if (guiA[0] == "T" && guiA[1] == "T"){
+			sptArray.push(canvasX);sptArray.push(canvasY);triggerclear = 1;sptout = 'ctx.font = "700 ' + String(guifontsize) + 'px Arial"; ctx.fillStyle = "black"; ctx.textAlign = "center";';
+			sptout += '\n\t\tctx.fillText("This is sample text",' + String(sptArray[0]) + ',' + sptArray[1] + '-state+' + String(stateM) + ');';copytoclipboard(sptout);
+		}
+		
+		if (guiA[0] == "T" && guiA[1] == "S"){
+			sptout='ctx.strokeStyle = "black"; ctx.lineWidth = 2;'; copytoclipboard(sptout); guiA = []; triggerclear = 1;
+		}
+		
+		if (guiA[0] == "T" && guiA[1] == "W"){
+			sptArray.push(canvasX);sptArray.push(canvasY);
+			triggerclear = 1;
+			sptout = 'ctx.font = "700 ' + String(guifontsize) + 'px Arial"; ctx.fillStyle = "black"; ctx.textAlign = "center";';
+			sptout += '\n\t\twrapText("This is Sample Text that should be tested okay this is text that needs to be tested.", ' + String(sptArray[0]) + ',' + String(sptArray[1]) + '+' + String(stateM) + '-state,400,' + String(guifontsize+5) + ',"OFF");'; 
+			copytoclipboard(sptout);
+			
+			if (guiA[2] == "D"){
+				sptArray2.push(canvasX);
+				if (guiA[3] == "D"){
+				sptArray2.push(canvasX); sptout = 'ctx.font = "700 ' + String(guifontsize) + 'px Arial"; ctx.fillStyle = "black"; ctx.textAlign = "center";';sptout += '\n\t\twrapText("This is Sample Text that should be tested okay this is text that needs to be tested.", ' + String(((sptArray2[1]+sptArray2[0])/2).toFixed(0)) + ',' + String(sptArray[1]) + '+' + String(stateM) + '-state,' + String(Math.abs(sptArray2[1]-sptArray2[0])) + ',' + String(guifontsize+5) + ',"OFF");'; 
+				copytoclipboard(sptout); triggerclear = 1;
+				}
+			}
+		}
+		if (guiA[0] == "M"){sptout=".toLocaleString('en-US')"; copytoclipboard(sptout); triggerclear=1;}
+		if (guiA[0] == "D"){sptArray.push(canvasX);sptArray.push(canvasY);if (guiA[1] == "X"){sptArray.push(canvasX);sptArray.push(canvasY);sptout = String(Math.abs(sptArray[2] - sptArray[0])); copytoclipboard(sptout);triggerclear = 1;}if (guiA[1] == "Y"){sptArray.push(canvasX);sptArray.push(canvasY);sptout = String(Math.abs(sptArray[3] - sptArray[1])); copytoclipboard(sptout);triggerclear = 1;}if (guiA[1] == "D"){sptArray.push(canvasX);sptArray.push(canvasY);sptout = String(Math.abs(Math.round(sptArray[2] - sptArray[0])/2));sptout += "," + String(Math.round(Math.abs(sptArray[3] - sptArray[1])/2));copytoclipboard(sptout);triggerclear = 1;}}
+		if (guiA[0] == "B"){sptArray.push(canvasX); sptArray.push(canvasY);if (guiA[1] == "B"){sptArray.push(canvasX); sptArray.push(canvasY);sptout = "if (canvasX > " + String(sptArray[0]) + " && canvasX < " + String(sptArray[2]) + " && canvasY > " + String(sptArray[1]) + " && canvasY < " + String(sptArray[3]) + "){}";copytoclipboard(sptout); triggerclear = 1;}if (guiA[1] == "V"){sptArray.push(canvasX); sptArray.push(canvasY);sptout = "&& canvasX > " + String(sptArray[0]) + " && canvasX < " + String(sptArray[2]) + " && canvasY > " + String(sptArray[1]) + " && canvasY < " + String(sptArray[3]);copytoclipboard(sptout); triggerclear = 1;}}
+		if (guiA[0] == "A"){sptout = 'animplayer(1,"anim//","smooth",0.6,25,0,' + String(stateM) + '-state,800,400);'; copytoclipboard(sptout); triggerclear = 1;}
+		if (guiA[0] == "A" && guiA[1] == "A"){sptout = 'boxArray.push(new box(state,scene,canvasX,canvasY,0.3));'; copytoclipboard(sptout); triggerclear = 1;}
+		if (guiA[0] == "A" && guiA[1] == "A" && guiA[2] == "A"){sptout='ctx.strokeStyle = "black"; ctx.lineWidth = 2;'; copytoclipboard(sptout); triggerclear = 1;}
+		if (guiA[0] == "A" && guiA[1] == "A" && guiA[2] == "A" && guiA[3] == "A"){sptout='for (let i = 0; i < 2; i++){for (let z = 0; z < 2; z++){'; copytoclipboard(sptout); triggerclear = 1;}
+		if (guiA[0] == "A" && guiA[1] == "A" && guiA[2] == "A" && guiA[3] == "A" && guiA[4] == "A"){sptout='ctx.shadowColor = "black"; ctx.shadowBlur = 10;'; copytoclipboard(sptout); guiA = []; triggerclear = 1;}
+		if (guiA[0] == "W" && guiA[1] == "1"){
+			sptArray.push(canvasX); sptArray.push(canvasY);
+			console.log(sptArray); 
+			if (guiA[4] == "1"){
+			
+			}
+		}
+	}	
+}
+
+function checkKeyReleased(evt) {
+	if (evt.keyCode == "39"){moveRight=0;}
+	if (evt.keyCode == "37"){moveLeft=0;}
+}
+
+</script>
+<p class="a" id = "textprint" value = ""></p>
+<p class="a" id = "demo1" value = ""></p>
+<p class="a" id = "demo2" value = ""></p>
+
+</html> 
+
+
